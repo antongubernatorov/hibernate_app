@@ -12,13 +12,19 @@ import ru.gubern.entity.User;
 public class HibernateUtil {
     
     public static SessionFactory buildSessionFactory() {
-        Configuration configuration = new Configuration();
-        configuration.addAnnotatedClass(User.class);
-        configuration.addAttributeConverter(BirthdayConverter.class);
-        configuration.registerTypeOverride(new JsonBinaryType());
+        var configuration = buildConfiguration();
         configuration.configure();
         configuration.setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
 
         return configuration.buildSessionFactory();
+    }
+
+    public static Configuration buildConfiguration() {
+        Configuration configuration = new Configuration();
+        configuration.setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
+        configuration.addAnnotatedClass(User.class);
+        configuration.addAttributeConverter(BirthdayConverter.class);
+        configuration.registerTypeOverride(new JsonBinaryType());
+        return configuration;
     }
 }
