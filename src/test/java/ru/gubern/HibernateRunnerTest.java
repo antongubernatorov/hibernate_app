@@ -2,8 +2,14 @@ package ru.gubern;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
+import lombok.Cleanup;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
+import ru.gubern.entity.Company;
+import ru.gubern.entity.Profile;
 import ru.gubern.entity.User;
+import ru.gubern.util.HibernateUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -20,6 +26,61 @@ import static java.util.stream.Collectors.joining;
 class HibernateRunnerTest {
 
     @Test
+    void checkH2() {
+        try(var sessionFactory = HibernateUtil.buildSessionFactory();
+            var session = sessionFactory.openSession();){
+            session.beginTransaction();
+
+            var company = Company.builder().companyName("AntonFLy")
+                    .build();
+            session.save(company);
+
+            session.getTransaction().commit();
+        }
+    }
+
+    @Test
+    void checkOneToOne(){
+        @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
+        @Cleanup var session = sessionFactory.openSession();
+        session.beginTransaction();
+        var user = User.builder()
+                        .username("test@gmail.com")
+                                .build();
+        var profile = Profile.builder()
+                .language("ru")
+                .street("Kolosa 18")
+                .build();
+
+        session.save(user);
+        profile.setUser(user);
+        session.save(profile);
+
+        session.getTransaction().commit();
+    }
+
+    @Test
+    void deleteCompany(){
+        @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
+        @Cleanup var session = sessionFactory.openSession();
+        session.beginTransaction();
+        var user = session.get(User.class, 1L);
+        session.delete(user);
+        session.getTransaction().commit();
+    }
+
+    @Test
+    void oneToMany(){
+        @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
+        @Cleanup var session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        var company = session.get(Company.class, 1);
+        System.out.println(company);
+        session.getTransaction().commit();
+    }
+
+    @Test
     void checkGetReflectionAPI() throws SQLException, NoSuchMethodException, NoSuchFieldException, InvocationTargetException, InstantiationException, IllegalAccessException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = preparedStatement.getResultSet();
@@ -28,7 +89,7 @@ class HibernateRunnerTest {
         
         Class<User> clazz = User.class;
         Constructor<User> constructor = clazz.getConstructor();
-        constructor.newInstance()
+        var user = constructor.newInstance();
         var username = clazz.getDeclaredField("username");
         username.setAccessible(true);
         username.set(user, resultSet.getString("username"));
