@@ -1,7 +1,7 @@
 package ru.gubern.converter;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import ru.gubern.entity.Birthday;
 
 import java.sql.Date;

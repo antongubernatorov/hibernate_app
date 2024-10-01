@@ -1,6 +1,6 @@
 package ru.gubern.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;

@@ -18,5 +18,7 @@
       <mapping class="ru.gubern.entity.Profile"/>
       <mapping class="ru.gubern.entity.Chat"/>
       <mapping class="ru.gubern.entity.UserChat"/>
+      <mapping class="ru.gubern.entity.Programmer"/>
+      <mapping class="ru.gubern.entity.Manager"/>
   </session-factory>
 </hibernate-configuration>

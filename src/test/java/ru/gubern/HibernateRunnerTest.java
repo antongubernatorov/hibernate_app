@@ -5,6 +5,7 @@ import jakarta.persistence.Table;
 import lombok.Cleanup;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.junit.jupiter.api.Test;
 import ru.gubern.entity.Company;
 import ru.gubern.entity.Profile;
@@ -19,11 +20,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.joining;
 
 class HibernateRunnerTest {
+
+    @Test
+    void checkHql(){
+        try(var sessionFactory = HibernateUtil.buildSessionFactory();
+            var session = sessionFactory.openSession();){
+            session.beginTransaction();
+
+            //jpql / hql
+            var list = session.createQuery(
+                    "select u from User u where u.personalInfo.firstname = :firstname",
+                    User.class)
+                    .setParameter("firstname", "Ivan").list();
+            session.getTransaction().commit();
+        }
+    }
 
     @Test
     void checkH2() {
@@ -44,9 +61,7 @@ class HibernateRunnerTest {
         @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
         @Cleanup var session = sessionFactory.openSession();
         session.beginTransaction();
-        var user = User.builder()
-                        .username("test@gmail.com")
-                                .build();
+        User user = null;
         var profile = Profile.builder()
                 .language("ru")
                 .street("Kolosa 18")
@@ -96,8 +111,7 @@ class HibernateRunnerTest {
     }    
     @Test
     void checkReflectionApi() throws SQLException, IllegalAccessException {
-        User user = User.builder()
-                .build();
+        User user = null;
         //language=SQL
         String sql = """
                 insert
