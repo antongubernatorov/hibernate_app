@@ -1,5 +1,6 @@
 package ru.gubern.dao;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,18 +19,20 @@ public class UserDao {
     @Getter
     private static final UserDao INSTANCE = new UserDao();
 
-    public List<User> findAll(Session session) {
+    public List<com.querydsl.core.Tuple> findAll(Session session) {
         /*return session.createQuery("select u from User u", User.class)
                 .list();*/
-        var cb = session.getCriteriaBuilder();
+        /*var cb = session.getCriteriaBuilder();
         var criteria = cb.createQuery(User.class);
         var user = criteria.from(User.class);
 
-        criteria.select(user);
+        criteria.select(user);*/
 
-        return session.createQuery(criteria)
-                .list();
-    }
+            return new JPAQuery<User>(session)
+                    .select(QUser.user)
+                    .from(QUser.user)
+                    .fetch();
+        }
 
     public List<User> findAllByFirstName(Session session, String firstName){
         /*return session.createQuery("select u from User u " +
