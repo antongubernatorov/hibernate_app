@@ -1,6 +1,9 @@
 package ru.gubern.entity;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import lombok.*;
 import org.hibernate.annotations.NamedQuery;
 
@@ -26,9 +29,11 @@ public class User implements Comparable<User>, BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Valid
     @AttributeOverride(name = "birthDate", column = @Column(name = "birth_date"))
     private PersonInfo personInfo;
 
+    @NotNull
     @Column(unique = true)
     private String username;
 

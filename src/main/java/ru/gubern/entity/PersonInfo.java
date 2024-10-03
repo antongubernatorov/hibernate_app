@@ -3,6 +3,7 @@ package ru.gubern.entity;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,5 +28,6 @@ public class PersonInfo implements Serializable {
     @Id
     private String firstname;
     private String lastname;
+    @NotNull
     private LocalDate birthDate;
 }

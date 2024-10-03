@@ -18,11 +18,17 @@ import java.util.Set;
 @ToString(exclude = "users")
 @EqualsAndHashCode(of = "companyName")
 @Audited
-public class Company {
+@NamedEntityGraph(
+        name = "WithCompany",
+        attributeNodes = {
+                @NamedAttributeNode("company")
+        }
+)
+public class Company implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String companyName;

@@ -1,10 +1,19 @@
 package ru.gubern;
 
 
-import org.junit.platform.commons.logging.LoggerFactory;
-import ru.gubern.entity.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.slf4j.LoggerFactory;
+import ru.gubern.dao.CompanyRepository;
+import ru.gubern.dao.PaymentRepository;
+import ru.gubern.dao.UserRepository;
+import ru.gubern.mapper.CompanyReadMapper;
+import ru.gubern.mapper.UserCreateMapper;
+import ru.gubern.mapper.UserReadMapper;
+import ru.gubern.service.UserService;
 import ru.gubern.util.HibernateUtil;
 
+import java.lang.reflect.Proxy;
 import java.util.logging.Logger;
 
 public class HibernateRunner {
@@ -12,27 +21,26 @@ public class HibernateRunner {
     private static final Logger log = (Logger) LoggerFactory.getLogger(HibernateRunner.class);
 
     public static void main(String[] args) {
-        /*var user = User.builder()
-                .username("ivan@gmail.com")
-                .lastname("Ivanov")
-                .firstname("Ivan")
-                .build();*/
-        log.info("User created");
         try (var sessionFactory = HibernateUtil.buildSessionFactory()) {
+            var session = (Session) Proxy.newProxyInstance(SessionFactory.class.getClassLoader(), new Class[]{Session.class},
+                    (proxy, method, args1) -> method.invoke(sessionFactory.getCurrentSession(), args1));
+            session.beginTransaction();
 
-            try (var session1 = sessionFactory.openSession()) {
+            var companyRepository = new CompanyRepository(session);
 
-                /*session1.saveOrUpdate(user);*/
+            var companyReadMapper = new CompanyReadMapper();
+            var userMapper = new UserReadMapper(companyReadMapper);
 
-                session1.getTransaction().commit();
-            }
+            var userCreateMapper = new UserCreateMapper(companyRepository);
 
+            var userRepository = new UserRepository(session);
+            var paymentRepository = new PaymentRepository(session);
 
-            try (var session2 = sessionFactory.openSession()) {
+            var userService = new UserService(userRepository, userMapper, userCreateMapper);
 
-                session2.getTransaction().commit();
-            }
+            paymentRepository.findById(1L).ifPresent(System.out::println);
 
+            session.getTransaction().commit();
         }
     }
 }
