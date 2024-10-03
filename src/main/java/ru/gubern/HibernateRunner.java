@@ -1,6 +1,7 @@
 package ru.gubern;
 
 
+import org.junit.platform.commons.logging.LoggerFactory;
 import ru.gubern.entity.User;
 import ru.gubern.util.HibernateUtil;
 
@@ -31,8 +32,6 @@ public class HibernateRunner {
 
                 session2.getTransaction().commit();
             }
-
-
 
         }
     }

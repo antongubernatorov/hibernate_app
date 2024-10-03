@@ -2,6 +2,8 @@ package ru.gubern.entity;
 
 import javax.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString(exclude = "users")
 @EqualsAndHashCode(of = "companyName")
+@Audited
 public class Company {
 
     @Id
@@ -25,11 +28,13 @@ public class Company {
     private String companyName;
 
     @Builder.Default
+    @NotAudited
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> users = new HashSet<>();
 
     @Builder.Default
     @ElementCollection
+    @NotAudited
     private List<LocaleInfo> locales = new ArrayList<>();
 
     public void addUser(User user){

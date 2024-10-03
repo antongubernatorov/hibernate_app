@@ -10,7 +10,9 @@ import org.hibernate.event.spi.EventType;
 import org.hibernate.internal.SessionFactoryImpl;
 import ru.gubern.converter.BirthdayConverter;
 import ru.gubern.entity.Audit;
+import ru.gubern.entity.Revision;
 import ru.gubern.entity.User;
+import ru.gubern.interceptor.GlobalInterceptor;
 import ru.gubern.listener.AuditTableListener;
 
 @UtilityClass
@@ -37,6 +39,8 @@ public class HibernateUtil {
         configuration.addAnnotatedClass(User.class);
         configuration.addAnnotatedClass(Audit.class);
         configuration.addAttributeConverter(BirthdayConverter.class);
+        configuration.addAnnotatedClass(Revision.class);
+        configuration.setInterceptor(new GlobalInterceptor());
         configuration.registerTypeOverride(new JsonBinaryType());
         return configuration;
     }
